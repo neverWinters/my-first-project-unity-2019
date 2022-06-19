@@ -20,6 +20,7 @@ public class PlayerMovementController : MonoBehaviour
     private CapsuleCollider _capsuleCollider;
     private float hInput;
     private float vInput;
+    private GameManager gameManager;
 
     
 
@@ -32,6 +33,11 @@ public class PlayerMovementController : MonoBehaviour
         playerMovementControls = new PlayerInputActions();
         playerMovementControls.Player.Jump.performed += jumpContext => JumpPerformed();
 
+    }
+
+    private void Start()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void FixedUpdate()
@@ -56,6 +62,14 @@ public class PlayerMovementController : MonoBehaviour
         playerMovementControls.Player.Move.Disable();
         playerMovementControls.Player.Jump.Disable();
 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            gameManager.PlayerHP = gameManager.PlayerHP - 15;
+        }
     }
 
     private void MovementPerformed(Vector2 inputVector)

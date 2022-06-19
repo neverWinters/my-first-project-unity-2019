@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     private int maxItems = 4;
     private int _itemsCollected = 0;
     private bool showWinScreen = false;
+    private bool showLossScreen = false;
     public int ItemsCollected
     {
 
@@ -22,13 +23,12 @@ public class GameManager : MonoBehaviour
             if (_itemsCollected >= maxItems)
             {
 
-                labelText = "Has encontrado todos los items";
-                showWinScreen = true;
-                Time.timeScale = 0;
+                GameOver(true);
 
             }
             else
             {
+
                 labelText = $"Item encontrado, te faltan: {maxItems - _itemsCollected}";
 
             }
@@ -42,7 +42,16 @@ public class GameManager : MonoBehaviour
         get { return _playerHP; }
 
         set 
-        { if(value >= 0 && value <= 100) _playerHP = value; }
+        { 
+            _playerHP = value; 
+            if(_playerHP <= 0)
+            {
+
+                _playerHP = 0;
+                GameOver(false);
+
+            }
+        }
 
     }
 
@@ -54,13 +63,30 @@ public class GameManager : MonoBehaviour
         GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height - 50, 200, 50), labelText);
 
         if (showWinScreen)
-            if (GUI.Button(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 100, 400, 200), "Has ganado")) 
-            {
+            ShowEndLevel("Has ganado");
 
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                Time.timeScale = 1;
+        if (showLossScreen)
+            ShowEndLevel("GAME OVER");
 
-            }
+    }
 
+    private void ShowEndLevel(string message)
+    {
+        
+        if (GUI.Button(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 100, 400, 200), message))
+        {
+
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Time.timeScale = 1;
+
+        }
+    }
+
+    private void GameOver(bool gameWon)
+    {
+        labelText = gameWon ? "Has encontrado todos los items" : "Has muerto... Prueba otra vez!";
+        showWinScreen = gameWon; 
+        showLossScreen = !gameWon;
+        Time.timeScale = 0;
     }
 }
